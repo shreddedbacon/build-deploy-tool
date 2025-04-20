@@ -654,6 +654,22 @@ func TestTemplateLagoonServices(t *testing.T) {
 			want: "internal/testdata/basic/service-templates/test-basic-deployment-revision-history",
 		},
 		{
+			name:        "basic-custom-volumes-nfs",
+			description: "create a basic with custom volumes",
+			args: testdata.GetSeedData(
+				testdata.TestData{
+					ProjectName:     "example-project",
+					EnvironmentName: "main",
+					Branch:          "main",
+					BuildType:       "branch",
+					LagoonYAML:      "internal/testdata/basic/lagoon.multiple-volumes-4.yml",
+					ImageReferences: map[string]string{
+						"node": "harbor.example/example-project/main/node@sha256:b2001babafaa8128fe89aa8fd11832cade59931d14c3de5b3ca32e2a010fbaa8",
+					},
+				}, true),
+			want: "internal/testdata/basic/service-templates/basic-custom-volumes-nfs",
+		},
+		{
 			name:        "test-basic-deployment-traefik-middleware",
 			description: "tests a basic deployment with traefik middleware",
 			args: testdata.GetSeedData(
