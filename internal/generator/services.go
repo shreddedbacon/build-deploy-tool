@@ -556,6 +556,16 @@ func composeToServiceValues(
 			}
 			cService.ServicePort = int32(sPort)
 		}
+		rootless := lagoon.CheckDockerComposeLagoonLabel(composeServiceValues.Labels, "lagoon.rootlessworkloads")
+		if rootless == "false" {
+			rbool, _ := strconv.ParseBool(rootless)
+			cService.RootlessWorkloads = &rbool
+		}
+		capNetAdmin := lagoon.CheckDockerComposeLagoonLabel(composeServiceValues.Labels, "lagoon.capnetadmin")
+		if capNetAdmin == "true" {
+			capbool, _ := strconv.ParseBool(capNetAdmin)
+			cService.CapNetAdmin = &capbool
+		}
 		useComposeServices := lagoon.CheckDockerComposeLagoonLabel(composeServiceValues.Labels, "lagoon.service.usecomposeports")
 		if useComposeServices == "true" {
 			for _, compPort := range composeServiceValues.Ports {

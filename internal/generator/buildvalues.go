@@ -228,6 +228,8 @@ type ServiceValues struct {
 	AdditionalVolumes                      []ServiceVolume         `json:"additionalVolumes,omitempty"`
 	CreateDefaultVolume                    bool                    `json:"createDefaultVolume"`
 	ExternalServiceName                    string                  `json:"externalServiceName,omitempty"`
+	RootlessWorkloads                      *bool                   `json:"rootlessWorkloads"`
+	CapNetAdmin                            *bool                   `json:"capNetAdmin"`
 }
 
 type ExternalService struct {

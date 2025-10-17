@@ -147,6 +147,9 @@ func generatePodTemplateSpec(
 			FSGroup:    helpers.Int64Ptr(buildValues.PodSecurityContext.FsGroup),
 		}
 	}
+	if serviceValues.RootlessWorkloads != nil && !*serviceValues.RootlessWorkloads {
+		podTemplateSpec.Spec.SecurityContext = &corev1.PodSecurityContext{}
+	}
 	// some services have a fsgroup override
 	if serviceTypeValues.PodSecurityContext.HasDefault {
 		podTemplateSpec.Spec.SecurityContext = &corev1.PodSecurityContext{
@@ -491,6 +494,15 @@ func generatePodTemplateSpec(
 					container.Container.Ports[0].ContainerPort = serviceValues.ServicePort
 				}
 			}
+		}
+	}
+	if serviceValues.CapNetAdmin != nil && *serviceValues.CapNetAdmin {
+		container.Container.SecurityContext = &corev1.SecurityContext{
+			Capabilities: &corev1.Capabilities{
+				Add: []corev1.Capability{
+					"NET_ADMIN",
+				},
+			},
 		}
 	}
 
