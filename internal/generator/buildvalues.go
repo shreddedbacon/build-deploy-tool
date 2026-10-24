@@ -230,6 +230,7 @@ type ServiceValues struct {
 	ExternalServiceName                    string                  `json:"externalServiceName,omitempty"`
 	RootlessWorkloads                      *bool                   `json:"rootlessWorkloads"`
 	CapNetAdmin                            *bool                   `json:"capNetAdmin"`
+	Strategy                               string                  `json:"strategy"`
 }
 
 type ExternalService struct {

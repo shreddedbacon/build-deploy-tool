@@ -566,6 +566,17 @@ func composeToServiceValues(
 			capbool, _ := strconv.ParseBool(capNetAdmin)
 			cService.CapNetAdmin = &capbool
 		}
+		strategy := lagoon.CheckDockerComposeLagoonLabel(composeServiceValues.Labels, "lagoon.service.strategy")
+		switch strategy {
+		case "":
+		case "recreate", "rollout":
+			cService.Strategy = strategy
+		default:
+			return nil, fmt.Errorf(
+				"the provided strategy %s for service %s is not valid, must be one of recreate or rollout",
+				strategy, composeService,
+			)
+		}
 		useComposeServices := lagoon.CheckDockerComposeLagoonLabel(composeServiceValues.Labels, "lagoon.service.usecomposeports")
 		if useComposeServices == "true" {
 			for _, compPort := range composeServiceValues.Ports {

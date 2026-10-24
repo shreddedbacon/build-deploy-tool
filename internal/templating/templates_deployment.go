@@ -140,6 +140,11 @@ func GenerateDeploymentTemplate(
 				},
 			}
 			deployment.Spec.Strategy = serviceTypeValues.Strategy
+			if serviceTypeValues.Strategy.Type != appsv1.RecreateDeploymentStrategyType && serviceValues.Strategy == "recreate" {
+				deployment.Spec.Strategy = appsv1.DeploymentStrategy{
+					Type: appsv1.RecreateDeploymentStrategyType,
+				}
+			}
 
 			podTemplateSpec, err := generatePodTemplateSpec(buildValues, serviceValues, serviceTypeValues, deployment.ObjectMeta, templateAnnotations, serviceTypeValues.PrimaryContainer.Name, "")
 			if err != nil {
