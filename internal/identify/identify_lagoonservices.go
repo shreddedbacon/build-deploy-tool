@@ -66,6 +66,16 @@ func LagoonServiceTemplateIdentification(g generator.GeneratorInput) (*IdentifyS
 		}
 		lagoonServices.Volumes = append(lagoonServices.Volumes, kubevol)
 	}
+	for _, vol := range lagoonBuild.BuildValues.Volumes {
+		if vol.Type != generator.NFS {
+			continue
+		}
+		lagoonServices.Volumes = append(lagoonServices.Volumes, schema.EnvironmentVolume{
+			Name:        vol.Name,
+			StorageType: string(generator.NFS),
+			Type:        string(generator.NFS),
+		})
+	}
 	deployments, err := servicestemplates.GenerateDeploymentTemplate(*lagoonBuild.BuildValues)
 	if err != nil {
 		return nil, nil, fmt.Errorf("couldn't identify deployments: %v", err)

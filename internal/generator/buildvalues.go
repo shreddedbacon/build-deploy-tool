@@ -166,11 +166,21 @@ type ImageCacheBuildArguments struct {
 	Name  string `json:"name"`
 }
 
+type VolumeType string
+
+const (
+	Persistent VolumeType = "persistent"
+	NFS        VolumeType = "nfs"
+)
+
 type ComposeVolume struct {
-	Name   string `json:"name" description:"name is the name the volume, when creating in kubernetes will have a prefix"`
-	Size   string `json:"size" description:"the size of the volume to request if the system enforces it"`
-	Create bool   `json:"create" description:"flag to determine if this volume is to be created or not"`
-	Backup bool   `json:"Backup" description:"flag to determine if this volume has backups enabled or not"`
+	Name          string     `json:"name" description:"name is the name the volume, when creating in kubernetes will have a prefix"`
+	Type          VolumeType `json:"type" description:"type is the type of persistent volume to be configured"`
+	Size          string     `json:"size" description:"the size of the volume to request if the system enforces it"`
+	Create        bool       `json:"create" description:"flag to determine if this volume is to be created or not"`
+	Backup        bool       `json:"backup" description:"flag to determine if this volume has backups enabled or not"`
+	NFSServer     string     `json:"nfsServer" description:"the server address if this is an nfs volume"`
+	NFSServerPath string     `json:"nfsServerPath" description:"the server address if this is an nfs volume"`
 }
 
 type ServiceVolume struct {
@@ -218,6 +228,9 @@ type ServiceValues struct {
 	AdditionalVolumes                      []ServiceVolume         `json:"additionalVolumes,omitempty"`
 	CreateDefaultVolume                    bool                    `json:"createDefaultVolume"`
 	ExternalServiceName                    string                  `json:"externalServiceName,omitempty"`
+	RootlessWorkloads                      *bool                   `json:"rootlessWorkloads"`
+	CapNetAdmin                            *bool                   `json:"capNetAdmin"`
+	Strategy                               string                  `json:"strategy"`
 }
 
 type ExternalService struct {

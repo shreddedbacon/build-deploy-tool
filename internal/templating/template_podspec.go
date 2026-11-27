@@ -147,6 +147,9 @@ func generatePodTemplateSpec(
 			FSGroup:    helpers.Int64Ptr(buildValues.PodSecurityContext.FsGroup),
 		}
 	}
+	if serviceValues.RootlessWorkloads != nil && !*serviceValues.RootlessWorkloads {
+		podTemplateSpec.Spec.SecurityContext = &corev1.PodSecurityContext{}
+	}
 	// some services have a fsgroup override
 	if serviceTypeValues.PodSecurityContext.HasDefault {
 		podTemplateSpec.Spec.SecurityContext = &corev1.PodSecurityContext{
@@ -180,15 +183,29 @@ func generatePodTemplateSpec(
 
 	// add any additional volumes with volumes
 	for _, av := range serviceValues.AdditionalVolumes {
-		volume := corev1.Volume{
-			Name: av.Name,
-			VolumeSource: corev1.VolumeSource{
-				PersistentVolumeClaim: &corev1.PersistentVolumeClaimVolumeSource{
-					ClaimName: av.Name,
+		switch av.Type {
+		case generator.Persistent:
+			volume := corev1.Volume{
+				Name: av.Name,
+				VolumeSource: corev1.VolumeSource{
+					PersistentVolumeClaim: &corev1.PersistentVolumeClaimVolumeSource{
+						ClaimName: av.Name,
+					},
 				},
-			},
+			}
+			podTemplateSpec.Spec.Volumes = append(podTemplateSpec.Spec.Volumes, volume)
+		case generator.NFS:
+			volume := corev1.Volume{
+				Name: av.Name,
+				VolumeSource: corev1.VolumeSource{
+					NFS: &corev1.NFSVolumeSource{
+						Server: av.NFSServer,
+						Path:   av.NFSServerPath,
+					},
+				},
+			}
+			podTemplateSpec.Spec.Volumes = append(podTemplateSpec.Spec.Volumes, volume)
 		}
-		podTemplateSpec.Spec.Volumes = append(podTemplateSpec.Spec.Volumes, volume)
 	}
 
 	// if there is a persistent volume attached to this service, handle adding that here
@@ -477,6 +494,15 @@ func generatePodTemplateSpec(
 					container.Container.Ports[0].ContainerPort = serviceValues.ServicePort
 				}
 			}
+		}
+	}
+	if serviceValues.CapNetAdmin != nil && *serviceValues.CapNetAdmin {
+		container.Container.SecurityContext = &corev1.SecurityContext{
+			Capabilities: &corev1.Capabilities{
+				Add: []corev1.Capability{
+					"NET_ADMIN",
+				},
+			},
 		}
 	}
 

@@ -175,6 +175,12 @@ func GetCurrentState(c *collector.Collector, gen generator.GeneratorInput) (
 		lagoonServices.Volumes = append(lagoonServices.Volumes, kubevol)
 	}
 
+	for _, vol := range currentServices.Volumes {
+		if vol.Type == string(generator.NFS) && !volumeExists(lagoonServices.Volumes, vol.Name) {
+			lagoonServices.Volumes = append(lagoonServices.Volumes, vol)
+		}
+	}
+
 	servMatch := false
 	var servDelete []corev1.Service
 	for _, exist := range state.Services.Items {

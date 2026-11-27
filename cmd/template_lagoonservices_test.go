@@ -603,6 +603,22 @@ func TestTemplateLagoonServices(t *testing.T) {
 			want: "internal/testdata/basic/service-templates/test-basic-single-k8upv2",
 		},
 		{
+			name:        "test-basic-strategy",
+			description: "tests the lagoon.service.strategy label, recreate applies to basic and rollout cannot change basic-single",
+			args: testdata.GetSeedData(
+				testdata.TestData{
+					ProjectName:     "example-project",
+					EnvironmentName: "main",
+					Branch:          "main",
+					LagoonYAML:      "internal/testdata/basic/lagoon.strategy.yml",
+					ImageReferences: map[string]string{
+						"basic":        "harbor.example/example-project/main/basic@sha256:b2001babafaa8128fe89aa8fd11832cade59931d14c3de5b3ca32e2a010fbaa8",
+						"basic-single": "harbor.example/example-project/main/basic-single@sha256:b2001babafaa8128fe89aa8fd11832cade59931d14c3de5b3ca32e2a010fbaa8",
+					},
+				}, true),
+			want: "internal/testdata/basic/service-templates/test-basic-strategy",
+		},
+		{
 			name:        "test-basic-external-service",
 			description: "tests a basic deployment with a basic and an external service and network policy to share a service",
 			args: testdata.GetSeedData(
@@ -652,6 +668,22 @@ func TestTemplateLagoonServices(t *testing.T) {
 					},
 				}, true),
 			want: "internal/testdata/basic/service-templates/test-basic-deployment-revision-history",
+		},
+		{
+			name:        "basic-custom-volumes-nfs",
+			description: "create a basic with custom volumes",
+			args: testdata.GetSeedData(
+				testdata.TestData{
+					ProjectName:     "example-project",
+					EnvironmentName: "main",
+					Branch:          "main",
+					BuildType:       "branch",
+					LagoonYAML:      "internal/testdata/basic/lagoon.multiple-volumes-4.yml",
+					ImageReferences: map[string]string{
+						"node": "harbor.example/example-project/main/node@sha256:b2001babafaa8128fe89aa8fd11832cade59931d14c3de5b3ca32e2a010fbaa8",
+					},
+				}, true),
+			want: "internal/testdata/basic/service-templates/basic-custom-volumes-nfs",
 		},
 		{
 			name:        "test-basic-deployment-traefik-middleware",
